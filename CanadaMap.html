@@ -15,6 +15,7 @@
         * {
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
+            touch-action: manipulation; /* Prevents double-tap zoom */
         }
         
         body, html {
@@ -286,6 +287,16 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // --- CONSTANTS ---
+        const MOBILE_BREAKPOINT = 768;
+        const MOBILE_ZOOM = 3.5;
+        const DESKTOP_ZOOM = 4;
+        
+        // Helper function to check if device is mobile
+        function isMobile() {
+            return window.innerWidth <= MOBILE_BREAKPOINT;
+        }
+        
         // --- 1. SETUP MAP ---
         // Centered on Canada [Lat, Long]
         var map = L.map('map', {
@@ -383,13 +394,12 @@
             var name = layer.feature.properties.name;
 
             // Responsive padding based on screen size
-            var isMobile = window.innerWidth <= 768;
-            var padding = isMobile ? [20, 20] : [50, 50];
+            var padding = isMobile() ? [20, 20] : [50, 50];
 
             map.flyToBounds(layer.getBounds(), { 
                 padding: padding, 
                 duration: 1.2,
-                maxZoom: isMobile ? 5 : 6
+                maxZoom: isMobile() ? 5 : 6
             });
             updateSidebar(name);
             document.getElementById('sidebar').classList.add('active');
@@ -455,8 +465,7 @@
                  document.getElementById('sidebar').classList.remove('active');
                  
                  // Responsive zoom reset
-                 var isMobile = window.innerWidth <= 768;
-                 var defaultZoom = isMobile ? 3.5 : 4;
+                 var defaultZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
                  
                  map.flyTo([56, -106], defaultZoom);
              }
@@ -476,9 +485,9 @@
             var diff = currentX - startX;
             
             // Swipe right to close on mobile
-            if (diff > 100 && window.innerWidth <= 768) {
+            if (diff > 100 && isMobile()) {
                 sidebar.classList.remove('active');
-                var defaultZoom = window.innerWidth <= 768 ? 3.5 : 4;
+                var defaultZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
                 map.flyTo([56, -106], defaultZoom);
             }
         }, { passive: true });
@@ -491,11 +500,6 @@
                 map.invalidateSize();
             }, 250);
         });
-
-        // Prevent double-tap zoom on mobile (iOS Safari)
-        document.addEventListener('dblclick', function(e) {
-            e.preventDefault();
-        }, { passive: false });
 
         // --- 6. LOAD GEOJSON ---
         // Reliable Canada GeoJSON source
