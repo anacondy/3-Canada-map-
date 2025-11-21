@@ -2,27 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Canada Governance Map 2025</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
         /* --- 1. GLOBAL & LAYOUT --- */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+        
         body, html {
             height: 100%;
             margin: 0;
             background-color: #050505;
             font-family: 'Inter', sans-serif;
             overflow: hidden;
+            position: fixed;
+            width: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         #map {
             height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile */
             width: 100%;
             z-index: 1;
             background: #050505;
-            outline: none; /* Removes focus ring on the map div */
+            outline: none;
+            touch-action: manipulation;
         }
 
         /* --- 2. BUG FIX: REMOVE THE CLICK BOX --- */
@@ -38,6 +52,7 @@
             left: 20px;
             z-index: 1000;
             width: 320px;
+            max-width: calc(100vw - 40px);
             padding: 20px;
             background: rgba(20, 20, 20, 0.6);
             backdrop-filter: blur(12px);
@@ -47,10 +62,21 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
             color: white;
             pointer-events: none;
+            transition: all 0.3s ease;
         }
 
-        .glass-header h1 { margin: 0; font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
-        .glass-header p { margin: 5px 0 0 0; font-size: 13px; color: #888; }
+        .glass-header h1 { 
+            margin: 0; 
+            font-size: 24px; 
+            font-weight: 800; 
+            color: #ffffff; 
+            letter-spacing: -0.5px; 
+        }
+        .glass-header p { 
+            margin: 5px 0 0 0; 
+            font-size: 13px; 
+            color: #888; 
+        }
 
         .info-sidebar {
             position: absolute;
@@ -58,6 +84,7 @@
             right: -400px;
             bottom: 20px;
             width: 320px;
+            max-width: calc(100vw - 40px);
             z-index: 1001;
             background: rgba(15, 15, 15, 0.8);
             backdrop-filter: blur(15px);
@@ -70,6 +97,8 @@
             display: flex;
             flex-direction: column;
             box-shadow: -20px 0 50px rgba(0,0,0,0.5);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .info-sidebar.active { right: 0; }
 
@@ -106,6 +135,140 @@
         .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before,
         .leaflet-tooltip-left:before, .leaflet-tooltip-right:before { display: none; }
 
+        /* --- 4. MOBILE RESPONSIVE DESIGN --- */
+        
+        /* Tablets and smaller laptops (landscape) */
+        @media only screen and (max-width: 1024px) {
+            .glass-header {
+                width: 280px;
+                padding: 16px;
+            }
+            
+            .glass-header h1 {
+                font-size: 20px;
+            }
+            
+            .glass-header p {
+                font-size: 12px;
+            }
+            
+            .info-sidebar {
+                width: 280px;
+                padding: 24px;
+            }
+        }
+        
+        /* Mobile devices (portrait and landscape) */
+        @media only screen and (max-width: 768px) {
+            .glass-header {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                width: auto;
+                max-width: none;
+                padding: 14px 16px;
+            }
+            
+            .glass-header h1 {
+                font-size: 18px;
+            }
+            
+            .glass-header p {
+                font-size: 11px;
+            }
+            
+            .info-sidebar {
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: -100%;
+                width: 100%;
+                max-width: 100%;
+                border-radius: 0;
+                border-left: none;
+                padding: 20px;
+                padding-top: 60px; /* Space for close area */
+            }
+            
+            .info-sidebar.active {
+                right: 0;
+            }
+            
+            .sidebar-title {
+                font-size: 28px;
+            }
+            
+            .data-value {
+                font-size: 15px;
+            }
+        }
+        
+        /* Small phones (portrait) - 16:9 and 20:9 aspect ratios */
+        @media only screen and (max-width: 480px) {
+            .glass-header {
+                top: 8px;
+                left: 8px;
+                right: 8px;
+                padding: 12px 14px;
+            }
+            
+            .glass-header h1 {
+                font-size: 16px;
+            }
+            
+            .glass-header p {
+                font-size: 10px;
+            }
+            
+            .state-badge {
+                font-size: 10px;
+                padding: 3px 10px;
+            }
+            
+            .sidebar-title {
+                font-size: 24px;
+            }
+            
+            .data-label {
+                font-size: 10px;
+            }
+            
+            .data-value {
+                font-size: 14px;
+            }
+            
+            .info-sidebar {
+                padding: 16px;
+                padding-top: 50px;
+            }
+        }
+        
+        /* Extra tall screens (20:9 aspect ratio) - typical for modern phones */
+        @media only screen and (min-aspect-ratio: 9/20) and (max-width: 480px) {
+            .glass-header {
+                top: 6px;
+                padding: 10px 12px;
+            }
+        }
+        
+        /* Performance optimization for mobile */
+        @media only screen and (max-width: 768px) {
+            .glass-header,
+            .info-sidebar {
+                will-change: transform;
+            }
+            
+            /* Reduce blur on lower-end devices for better performance */
+            @media (prefers-reduced-motion: reduce) {
+                .glass-header,
+                .info-sidebar,
+                .leaflet-tooltip.glass-tooltip {
+                    backdrop-filter: none;
+                    -webkit-backdrop-filter: none;
+                }
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -129,12 +292,32 @@
             zoomControl: false,
             attributionControl: false,
             center: [56, -106],
-            zoom: 4
+            zoom: 4,
+            // Mobile optimizations
+            tap: true,
+            tapTolerance: 15,
+            zoomAnimation: true,
+            fadeAnimation: true,
+            markerZoomAnimation: true,
+            // Performance optimizations
+            preferCanvas: false,
+            updateWhenIdle: false,
+            updateWhenZooming: false,
+            // Touch interactions
+            dragging: true,
+            touchZoom: true,
+            scrollWheelZoom: true,
+            doubleClickZoom: true,
+            boxZoom: false
         });
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             subdomains: 'abcd',
-            maxZoom: 19
+            maxZoom: 19,
+            // Performance optimizations
+            keepBuffer: 2,
+            updateWhenIdle: true,
+            updateWhenZooming: false
         }).addTo(map);
 
         // --- 2. POLITICAL DATA (Updated Nov 2025) ---
@@ -186,7 +369,9 @@
         function highlightFeature(e) {
             var layer = e.target;
             layer.setStyle({ weight: 3, color: '#fff', fillOpacity: 0.5 });
-            layer.bringToFront();
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
         }
 
         function resetHighlight(e) {
@@ -195,10 +380,17 @@
 
         function zoomToFeature(e) {
             var layer = e.target;
-            // Use .name for Canada GeoJSON usually
             var name = layer.feature.properties.name;
 
-            map.flyToBounds(layer.getBounds(), { padding: [50, 50], duration: 1.2 });
+            // Responsive padding based on screen size
+            var isMobile = window.innerWidth <= 768;
+            var padding = isMobile ? [20, 20] : [50, 50];
+
+            map.flyToBounds(layer.getBounds(), { 
+                padding: padding, 
+                duration: 1.2,
+                maxZoom: isMobile ? 5 : 6
+            });
             updateSidebar(name);
             document.getElementById('sidebar').classList.add('active');
         }
@@ -261,9 +453,49 @@
         map.on('click', function(e) {
              if (e.originalEvent.target.id === 'map') {
                  document.getElementById('sidebar').classList.remove('active');
-                 map.flyTo([56, -106], 4);
+                 
+                 // Responsive zoom reset
+                 var isMobile = window.innerWidth <= 768;
+                 var defaultZoom = isMobile ? 3.5 : 4;
+                 
+                 map.flyTo([56, -106], defaultZoom);
              }
         });
+
+        // Add touch-friendly close for sidebar on mobile
+        var sidebar = document.getElementById('sidebar');
+        var startX = 0;
+        var currentX = 0;
+        
+        sidebar.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+        }, { passive: true });
+        
+        sidebar.addEventListener('touchmove', function(e) {
+            currentX = e.touches[0].clientX;
+            var diff = currentX - startX;
+            
+            // Swipe right to close on mobile
+            if (diff > 100 && window.innerWidth <= 768) {
+                sidebar.classList.remove('active');
+                var defaultZoom = window.innerWidth <= 768 ? 3.5 : 4;
+                map.flyTo([56, -106], defaultZoom);
+            }
+        }, { passive: true });
+
+        // Handle orientation changes and responsive resizing
+        var resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                map.invalidateSize();
+            }, 250);
+        });
+
+        // Prevent double-tap zoom on mobile (iOS Safari)
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
 
         // --- 6. LOAD GEOJSON ---
         // Reliable Canada GeoJSON source
