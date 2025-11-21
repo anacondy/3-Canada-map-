@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canada Political Map - November 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        
+        .map-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        svg {
+            width: 100%;
+            height: auto;
+        }
+        
+        .province {
+            stroke: #fff;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .province:hover {
+            opacity: 0.8;
+            stroke-width: 3;
+        }
+        
+        .liberal { fill: #D71920; }
+        .conservative { fill: #1A4782; }
+        .ndp { fill: #F37021; }
+        .bloc { fill: #33B2CC; }
+        .green { fill: #3D9B35; }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .info-box {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            color: #1976d2;
+        }
+        
+        .province-label {
+            font-size: 14px;
+            font-weight: bold;
+            fill: white;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍁 Canada Political Map 🍁</h1>
+        <div class="subtitle">Provincial Political Affiliations - November 2025</div>
+        
+        <div class="map-container">
+            <svg viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg">
+                <!-- British Columbia -->
+                <path class="province ndp" data-province="British Columbia" data-party="NDP"
+                      d="M 50,250 L 50,450 L 150,500 L 180,480 L 180,300 L 120,220 Z"/>
+                <text class="province-label" x="115" y="360">BC</text>
+                
+                <!-- Alberta -->
+                <path class="province conservative" data-province="Alberta" data-party="Conservative"
+                      d="M 180,300 L 180,480 L 280,480 L 280,300 Z"/>
+                <text class="province-label" x="230" y="390">AB</text>
+                
+                <!-- Saskatchewan -->
+                <path class="province conservative" data-province="Saskatchewan" data-party="Conservative"
+                      d="M 280,300 L 280,480 L 380,480 L 380,300 Z"/>
+                <text class="province-label" x="330" y="390">SK</text>
+                
+                <!-- Manitoba -->
+                <path class="province ndp" data-province="Manitoba" data-party="NDP"
+                      d="M 380,300 L 380,480 L 480,480 L 480,300 Z"/>
+                <text class="province-label" x="430" y="390">MB</text>
+                
+                <!-- Ontario -->
+                <path class="province conservative" data-province="Ontario" data-party="Conservative"
+                      d="M 480,280 L 480,500 L 650,500 L 670,450 L 670,280 Z"/>
+                <text class="province-label" x="575" y="390">ON</text>
+                
+                <!-- Quebec -->
+                <path class="province liberal" data-province="Quebec" data-party="Liberal"
+                      d="M 670,250 L 670,450 L 850,450 L 870,400 L 870,250 Z"/>
+                <text class="province-label" x="770" y="350">QC</text>
+                
+                <!-- New Brunswick -->
+                <path class="province conservative" data-province="New Brunswick" data-party="Conservative"
+                      d="M 870,350 L 870,420 L 920,420 L 920,350 Z"/>
+                <text class="province-label" x="895" y="385">NB</text>
+                
+                <!-- Nova Scotia -->
+                <path class="province conservative" data-province="Nova Scotia" data-party="Conservative"
+                      d="M 900,430 L 900,470 L 950,470 L 950,430 Z"/>
+                <text class="province-label" x="925" y="450">NS</text>
+                
+                <!-- Prince Edward Island -->
+                <ellipse class="province liberal" data-province="Prince Edward Island" data-party="Liberal"
+                         cx="920" cy="320" rx="25" ry="15"/>
+                <text class="province-label" x="920" y="325">PE</text>
+                
+                <!-- Newfoundland and Labrador -->
+                <path class="province liberal" data-province="Newfoundland and Labrador" data-party="Liberal"
+                      d="M 900,200 L 900,280 L 970,280 L 970,200 Z"/>
+                <text class="province-label" x="935" y="240">NL</text>
+                
+                <!-- Yukon -->
+                <path class="province liberal" data-province="Yukon" data-party="Liberal"
+                      d="M 80,80 L 80,180 L 160,180 L 160,80 Z"/>
+                <text class="province-label" x="120" y="130">YT</text>
+                
+                <!-- Northwest Territories -->
+                <path class="province liberal" data-province="Northwest Territories" data-party="Liberal"
+                      d="M 170,80 L 170,200 L 350,200 L 350,80 Z"/>
+                <text class="province-label" x="260" y="140">NT</text>
+                
+                <!-- Nunavut -->
+                <path class="province liberal" data-province="Nunavut" data-party="Liberal"
+                      d="M 360,50 L 360,250 L 650,250 L 650,50 Z"/>
+                <text class="province-label" x="505" y="150">NU</text>
+            </svg>
+        </div>
+        
+        <div class="info-box">
+            Hover over provinces to see details
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color liberal"></div>
+                <span><strong>Liberal</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color conservative"></div>
+                <span><strong>Conservative</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color ndp"></div>
+                <span><strong>NDP</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color bloc"></div>
+                <span><strong>Bloc Québécois</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color green"></div>
+                <span><strong>Green</strong></span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const provinces = document.querySelectorAll('.province');
+        const infoBox = document.querySelector('.info-box');
+        
+        provinces.forEach(province => {
+            province.addEventListener('mouseenter', (e) => {
+                const name = e.target.getAttribute('data-province');
+                const party = e.target.getAttribute('data-party');
+                infoBox.textContent = `${name} - ${party}`;
+                infoBox.style.background = '#c8e6c9';
+            });
+            
+            province.addEventListener('mouseleave', () => {
+                infoBox.textContent = 'Hover over provinces to see details';
+                infoBox.style.background = '#e3f2fd';
+            });
+        });
+    </script>
+</body>
+</html>
