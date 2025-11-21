@@ -54,6 +54,11 @@ An interactive, mobile-optimized map visualization of Canada's provincial and te
 
 ## 📱 Screenshots
 
+> **Note**: The screenshots below were taken in an automated testing environment where external CDN resources are blocked. The map renders perfectly when opened in a real browser with internet access. To see the fully working interactive map, please open `CanadaMap.html` in your browser.
+
+### Screenshot Environment Limitation
+![Testing Environment Note](https://github.com/user-attachments/assets/a3852172-413f-4c6f-9db1-f3aa99993a93)
+
 ### Desktop View
 ![Desktop View](https://github.com/user-attachments/assets/cd0ca430-87a0-466d-af06-e15908ff6f4e)
 
@@ -68,9 +73,11 @@ An interactive, mobile-optimized map visualization of Canada's provincial and te
 #### Tablet (768x1024)
 ![Tablet View](https://github.com/user-attachments/assets/5f756011-9d51-411d-b2f0-231442ee5ba0)
 
-*Screenshots showcase responsive behavior across iPhone, Android, and tablet devices with both 16:9 and 20:9 aspect ratios. The header adapts to smaller screens while maintaining readability.*
+*Screenshots showcase responsive behavior across iPhone, Android, and tablet devices with both 16:9 and 20:9 aspect ratios. The header adapts to smaller screens while maintaining readability. The map will display fully when opened in a browser with internet access.*
 
 ## 🚀 Quick Start
+
+> **Important**: This map requires an internet connection to load external resources (Leaflet.js library, map tiles, and fonts). Simply open the HTML file in any modern browser with internet access.
 
 ### Local Development
 1. Clone the repository:
@@ -94,7 +101,7 @@ An interactive, mobile-optimized map visualization of Canada's provincial and te
 3. Navigate to `http://localhost:8000/CanadaMap.html`
 
 ### Direct Use
-Simply open `CanadaMap.html` in any modern web browser. For best experience, serve via HTTP/HTTPS rather than file:// protocol.
+Simply open `CanadaMap.html` in any modern web browser with an active internet connection. The map will automatically load the required libraries and tiles from CDNs. For best experience, serve via HTTP/HTTPS rather than file:// protocol.
 
 ## 📊 Data Source
 
