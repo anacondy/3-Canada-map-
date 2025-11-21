@@ -58,7 +58,17 @@ An interactive, mobile-optimized map visualization of Canada's provincial and te
 ![Desktop View](https://github.com/user-attachments/assets/cd0ca430-87a0-466d-af06-e15908ff6f4e)
 
 ### Mobile Views
-*Screenshots showcase responsive behavior across iPhone, Android, and tablet devices with both 16:9 and 20:9 aspect ratios*
+
+#### iPhone (16:9 - 375x667)
+![iPhone View](https://github.com/user-attachments/assets/80103f93-e4f6-49f3-abb7-df257db167fb)
+
+#### Modern Smartphone (20:9 - 412x915)
+![Modern Smartphone View](https://github.com/user-attachments/assets/560e063a-cf8c-4006-a5de-fe8755fd1563)
+
+#### Tablet (768x1024)
+![Tablet View](https://github.com/user-attachments/assets/5f756011-9d51-411d-b2f0-231442ee5ba0)
+
+*Screenshots showcase responsive behavior across iPhone, Android, and tablet devices with both 16:9 and 20:9 aspect ratios. The header adapts to smaller screens while maintaining readability.*
 
 ## 🚀 Quick Start
 
