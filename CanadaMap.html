@@ -565,7 +565,7 @@
                 var expectedZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
                 
                 // Only adjust if zoom hasn't been manually changed
-                if (Math.abs(currentZoom - DESKTOP_ZOOM) < 0.5 || Math.abs(currentZoom - MOBILE_ZOOM) < 0.5 || Math.abs(currentZoom - DESKTOP_ZOOM) < 0.5) {
+                if (Math.abs(currentZoom - DESKTOP_ZOOM) < 0.5 || Math.abs(currentZoom - MOBILE_ZOOM) < 0.5) {
                     map.setZoom(expectedZoom);
                 }
             }, 250);
