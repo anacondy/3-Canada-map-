@@ -335,6 +335,8 @@
         const DESKTOP_ZOOM = 4;
         const LOADER_HIDE_DELAY = 500; // Delay before hiding loading indicator (ms)
         const MAP_RESIZE_DELAY = 100; // Delay before resizing map on load (ms)
+        const RESIZE_THROTTLE_DELAY = 250; // Debounce delay for window resize events (ms)
+        const ZOOM_TOLERANCE = 0.5; // Tolerance for zoom level comparison
         
         // Helper function to check if device is mobile
         function isMobile() {
@@ -567,10 +569,10 @@
                 var expectedZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
                 
                 // Only adjust if zoom hasn't been manually changed
-                if (Math.abs(currentZoom - DESKTOP_ZOOM) < 0.5 || Math.abs(currentZoom - MOBILE_ZOOM) < 0.5) {
+                if (Math.abs(currentZoom - DESKTOP_ZOOM) < ZOOM_TOLERANCE || Math.abs(currentZoom - MOBILE_ZOOM) < ZOOM_TOLERANCE) {
                     map.setZoom(expectedZoom);
                 }
-            }, 250);
+            }, RESIZE_THROTTLE_DELAY);
         });
         
         // Ensure map is properly sized on load
