@@ -311,8 +311,8 @@
 </head>
 <body>
 
-    <div id="map-loader" class="active">
-        <div class="loader-spinner"></div>
+    <div id="map-loader" class="active" role="status" aria-live="polite">
+        <div class="loader-spinner" aria-label="Loading spinner"></div>
         <div>Loading Canada Map...</div>
     </div>
 
@@ -610,6 +610,8 @@
                 // Use safer DOM manipulation to prevent XSS
                 var errorDiv = document.createElement('div');
                 errorDiv.className = 'map-error';
+                errorDiv.setAttribute('role', 'alert');
+                errorDiv.setAttribute('aria-live', 'assertive');
                 errorDiv.textContent = 'Map loading failed. Please refresh the page.';
                 mapLoader.innerHTML = '';
                 mapLoader.appendChild(errorDiv);
