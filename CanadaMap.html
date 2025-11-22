@@ -343,6 +343,12 @@
             return window.innerWidth <= MOBILE_BREAKPOINT;
         }
         
+        // Helper function to check if current zoom is at default level
+        function isDefaultZoomLevel(zoom) {
+            return Math.abs(zoom - DESKTOP_ZOOM) < ZOOM_TOLERANCE || 
+                   Math.abs(zoom - MOBILE_ZOOM) < ZOOM_TOLERANCE;
+        }
+        
         // --- 1. SETUP MAP ---
         // Centered on Canada [Lat, Long]
         // Set initial zoom based on device type
@@ -569,7 +575,7 @@
                 var expectedZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
                 
                 // Only adjust if zoom hasn't been manually changed
-                if (Math.abs(currentZoom - DESKTOP_ZOOM) < ZOOM_TOLERANCE || Math.abs(currentZoom - MOBILE_ZOOM) < ZOOM_TOLERANCE) {
+                if (isDefaultZoomLevel(currentZoom)) {
                     map.setZoom(expectedZoom);
                 }
             }, RESIZE_THROTTLE_DELAY);
