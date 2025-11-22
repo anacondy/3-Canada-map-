@@ -269,10 +269,47 @@
                 }
             }
         }
+        
+        /* Loading indicator */
+        #map-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            text-align: center;
+            color: #fff;
+            font-size: 14px;
+            display: none;
+        }
+        
+        #map-loader.active {
+            display: block;
+        }
+        
+        .loader-spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 10px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #00E5FF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
     </style>
 </head>
 <body>
+
+    <div id="map-loader" class="active">
+        <div class="loader-spinner"></div>
+        <div>Loading Canada Map...</div>
+    </div>
 
     <div class="glass-header">
         <h1>Canada Governance</h1>
@@ -299,11 +336,14 @@
         
         // --- 1. SETUP MAP ---
         // Centered on Canada [Lat, Long]
+        // Set initial zoom based on device type
+        var initialZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
+        
         var map = L.map('map', {
             zoomControl: false,
             attributionControl: false,
             center: [56, -106],
-            zoom: 4,
+            zoom: initialZoom,
             // Mobile optimizations
             tap: true,
             tapTolerance: 15,
@@ -322,14 +362,29 @@
             boxZoom: false
         });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        var tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             subdomains: 'abcd',
             maxZoom: 19,
             // Performance optimizations
             keepBuffer: 2,
             updateWhenIdle: true,
-            updateWhenZooming: false
+            updateWhenZooming: false,
+            // Error handling for mobile networks
+            errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
         }).addTo(map);
+
+        // Add loading feedback
+        tileLayer.on('loading', function() {
+            console.log('Map tiles loading...');
+        });
+        
+        tileLayer.on('load', function() {
+            console.log('Map tiles loaded successfully');
+        });
+        
+        tileLayer.on('tileerror', function(error) {
+            console.warn('Tile loading error:', error);
+        });
 
         // --- 2. POLITICAL DATA (Updated Nov 2025) ---
         // C = Conservative (Blue), L = Liberal (Red), N = NDP (Orange), Q = CAQ (Teal), O = Other
@@ -498,11 +553,29 @@
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function() {
                 map.invalidateSize();
+                
+                // Adjust zoom level based on new screen size
+                var currentZoom = map.getZoom();
+                var expectedZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
+                
+                // Only adjust if zoom hasn't been manually changed
+                if (Math.abs(currentZoom - 4) < 0.5 || Math.abs(currentZoom - MOBILE_ZOOM) < 0.5 || Math.abs(currentZoom - DESKTOP_ZOOM) < 0.5) {
+                    map.setZoom(expectedZoom);
+                }
             }, 250);
+        });
+        
+        // Ensure map is properly sized on load
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 100);
         });
 
         // --- 6. LOAD GEOJSON ---
         // Reliable Canada GeoJSON source
+        var mapLoader = document.getElementById('map-loader');
+        
         fetch('https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/canada.geojson')
             .then(res => res.json())
             .then(data => {
@@ -510,6 +583,15 @@
                     style: style,
                     onEachFeature: onEachFeature
                 }).addTo(map);
+                
+                // Hide loader once GeoJSON is loaded
+                setTimeout(function() {
+                    mapLoader.classList.remove('active');
+                }, 500);
+            })
+            .catch(error => {
+                console.error('Error loading GeoJSON:', error);
+                mapLoader.innerHTML = '<div style="color: #ff6b6b;">Map loading failed. Please refresh the page.</div>';
             });
 
     </script>
