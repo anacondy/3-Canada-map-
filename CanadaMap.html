@@ -333,6 +333,8 @@
         const MOBILE_BREAKPOINT = 768;
         const MOBILE_ZOOM = 3.5;
         const DESKTOP_ZOOM = 4;
+        const LOADER_HIDE_DELAY = 500; // Delay before hiding loading indicator (ms)
+        const MAP_RESIZE_DELAY = 100; // Delay before resizing map on load (ms)
         
         // Helper function to check if device is mobile
         function isMobile() {
@@ -575,7 +577,7 @@
         window.addEventListener('load', function() {
             setTimeout(function() {
                 map.invalidateSize();
-            }, 100);
+            }, MAP_RESIZE_DELAY);
         });
 
         // --- 6. LOAD GEOJSON ---
@@ -593,7 +595,7 @@
                 // Hide loader once GeoJSON is loaded
                 setTimeout(function() {
                     mapLoader.classList.remove('active');
-                }, 500);
+                }, LOADER_HIDE_DELAY);
             })
             .catch(error => {
                 console.error('Error loading GeoJSON:', error);
