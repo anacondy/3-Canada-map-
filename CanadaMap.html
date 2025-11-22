@@ -301,6 +301,11 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Error message styling */
+        .map-error {
+            color: #ff6b6b;
+        }
 
     </style>
 </head>
@@ -370,6 +375,7 @@
             updateWhenIdle: true,
             updateWhenZooming: false,
             // Error handling for mobile networks
+            // Uses 1x1 transparent GIF as placeholder for failed tiles
             errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
         }).addTo(map);
 
@@ -559,7 +565,7 @@
                 var expectedZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
                 
                 // Only adjust if zoom hasn't been manually changed
-                if (Math.abs(currentZoom - 4) < 0.5 || Math.abs(currentZoom - MOBILE_ZOOM) < 0.5 || Math.abs(currentZoom - DESKTOP_ZOOM) < 0.5) {
+                if (Math.abs(currentZoom - DESKTOP_ZOOM) < 0.5 || Math.abs(currentZoom - MOBILE_ZOOM) < 0.5 || Math.abs(currentZoom - DESKTOP_ZOOM) < 0.5) {
                     map.setZoom(expectedZoom);
                 }
             }, 250);
@@ -591,7 +597,7 @@
             })
             .catch(error => {
                 console.error('Error loading GeoJSON:', error);
-                mapLoader.innerHTML = '<div style="color: #ff6b6b;">Map loading failed. Please refresh the page.</div>';
+                mapLoader.innerHTML = '<div class="map-error">Map loading failed. Please refresh the page.</div>';
             });
 
     </script>
