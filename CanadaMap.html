@@ -599,7 +599,12 @@
             })
             .catch(error => {
                 console.error('Error loading GeoJSON:', error);
-                mapLoader.innerHTML = '<div class="map-error">Map loading failed. Please refresh the page.</div>';
+                // Use safer DOM manipulation to prevent XSS
+                var errorDiv = document.createElement('div');
+                errorDiv.className = 'map-error';
+                errorDiv.textContent = 'Map loading failed. Please refresh the page.';
+                mapLoader.innerHTML = '';
+                mapLoader.appendChild(errorDiv);
             });
 
     </script>
