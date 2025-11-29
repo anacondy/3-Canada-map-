@@ -6,7 +6,16 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#050505">
+    <meta name="description" content="Interactive map of Canada's provincial and territorial political landscape - November 2025">
     <title>Canada Governance Map 2025</title>
+    
+    <!-- Preconnect for faster resource loading -->
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
@@ -43,7 +52,19 @@
         /* --- 2. BUG FIX: REMOVE THE CLICK BOX --- */
         /* This kills the white square outline when you click a state/province */
         path.leaflet-interactive:focus {
-            outline: none;
+            outline: none !important;
+        }
+        
+        /* Remove focus outline on all leaflet elements */
+        .leaflet-container:focus,
+        .leaflet-container *:focus {
+            outline: none !important;
+        }
+        
+        /* Ensure SVG paths have no outline */
+        svg path:focus,
+        .leaflet-overlay-pane path:focus {
+            outline: none !important;
         }
 
         /* --- 3. GLASSMORPHISM UI --- */
@@ -87,21 +108,50 @@
             width: 320px;
             max-width: calc(100vw - 40px);
             z-index: 1001;
-            background: rgba(15, 15, 15, 0.8);
+            background: rgba(15, 15, 15, 0.95);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-left: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px 0 0 20px;
             padding: 30px;
             color: white;
-            transition: right 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: right 0.35s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
             display: flex;
             flex-direction: column;
             box-shadow: -20px 0 50px rgba(0,0,0,0.5);
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            will-change: transform, right;
         }
         .info-sidebar.active { right: 0; }
+        
+        /* Close button styling */
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease, transform 0.2s ease;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        .close-btn:active {
+            transform: scale(0.95);
+        }
 
         /* Badges & Data Styling */
         .state-badge { display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; }
@@ -178,29 +228,63 @@
                 font-size: 11px;
             }
             
+            /* Mobile bottom sheet panel - max 40% of screen height */
             .info-sidebar {
-                top: 0;
-                bottom: 0;
+                top: auto;
+                bottom: -50%;
                 left: 0;
-                right: -100%;
+                right: 0;
                 width: 100%;
                 max-width: 100%;
-                border-radius: 0;
+                max-height: 40vh;
+                max-height: 40dvh;
+                border-radius: 20px 20px 0 0;
                 border-left: none;
-                padding: 20px;
-                padding-top: 60px; /* Space for close area */
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                padding: 16px 20px 24px 20px;
+                transition: bottom 0.35s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
             }
             
             .info-sidebar.active {
                 right: 0;
+                bottom: 0;
+                transform: translateY(0);
+            }
+            
+            /* Drag handle indicator for mobile */
+            .info-sidebar::before {
+                content: '';
+                position: absolute;
+                top: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 40px;
+                height: 4px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 2px;
+            }
+            
+            .close-btn {
+                top: 12px;
+                right: 12px;
+                width: 32px;
+                height: 32px;
+                font-size: 18px;
             }
             
             .sidebar-title {
-                font-size: 28px;
+                font-size: 22px;
+                margin-top: 8px;
             }
             
             .data-value {
                 font-size: 15px;
+            }
+            
+            .data-section {
+                margin-bottom: 16px;
+                padding-bottom: 12px;
             }
         }
         
@@ -227,7 +311,7 @@
             }
             
             .sidebar-title {
-                font-size: 24px;
+                font-size: 20px;
             }
             
             .data-label {
@@ -235,20 +319,96 @@
             }
             
             .data-value {
-                font-size: 14px;
+                font-size: 13px;
             }
             
             .info-sidebar {
-                padding: 16px;
-                padding-top: 50px;
+                padding: 14px 16px 20px 16px;
+                max-height: 38vh;
+                max-height: 38dvh;
+            }
+            
+            .data-section {
+                margin-bottom: 12px;
+                padding-bottom: 10px;
             }
         }
         
-        /* Extra tall screens (20:9 aspect ratio) - typical for modern phones */
+        /* 16:9 aspect ratio optimization (standard phones) */
+        @media only screen and (max-aspect-ratio: 9/16) and (max-width: 480px) {
+            .info-sidebar {
+                max-height: 40vh;
+                max-height: 40dvh;
+            }
+            
+            .sidebar-title {
+                font-size: 20px;
+            }
+        }
+        
+        /* 20:9 / 21:9 aspect ratio optimization (tall modern phones) */
         @media only screen and (min-aspect-ratio: 9/20) and (max-width: 480px) {
             .glass-header {
                 top: 6px;
                 padding: 10px 12px;
+            }
+            
+            .info-sidebar {
+                max-height: 35vh;
+                max-height: 35dvh;
+            }
+            
+            .sidebar-title {
+                font-size: 18px;
+            }
+            
+            .data-section {
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+            }
+        }
+        
+        /* Widescreen and large desktop optimization */
+        @media only screen and (min-width: 1440px) {
+            .glass-header {
+                width: 360px;
+                padding: 24px;
+            }
+            
+            .glass-header h1 {
+                font-size: 28px;
+            }
+            
+            .glass-header p {
+                font-size: 14px;
+            }
+            
+            .info-sidebar {
+                width: 380px;
+                padding: 36px;
+            }
+            
+            .sidebar-title {
+                font-size: 36px;
+            }
+            
+            .data-value {
+                font-size: 18px;
+            }
+        }
+        
+        /* Ultra-wide screens (21:9 and wider) */
+        @media only screen and (min-width: 1920px) and (min-aspect-ratio: 21/9) {
+            .glass-header {
+                width: 400px;
+                left: 30px;
+                top: 30px;
+            }
+            
+            .info-sidebar {
+                width: 420px;
+                top: 30px;
+                bottom: 30px;
             }
         }
         
@@ -322,6 +482,7 @@
     </div>
 
     <div id="sidebar" class="info-sidebar">
+        <button id="close-btn" class="close-btn" aria-label="Close panel">×</button>
         <div id="sidebar-content"></div>
     </div>
 
@@ -331,12 +492,15 @@
     <script>
         // --- CONSTANTS ---
         const MOBILE_BREAKPOINT = 768;
+        const WIDESCREEN_BREAKPOINT = 1440;
         const MOBILE_ZOOM = 3.5;
         const DESKTOP_ZOOM = 4;
-        const LOADER_HIDE_DELAY = 500; // Delay before hiding loading indicator (ms)
-        const MAP_RESIZE_DELAY = 100; // Delay before resizing map on load (ms)
-        const RESIZE_THROTTLE_DELAY = 250; // Debounce delay for window resize events (ms)
+        const WIDESCREEN_ZOOM = 4.5;
+        const LOADER_HIDE_DELAY = 300; // Reduced for faster perceived loading
+        const MAP_RESIZE_DELAY = 50; // Faster map resize
+        const RESIZE_THROTTLE_DELAY = 150; // Faster debounce for smoother resizing
         const ZOOM_TOLERANCE = 0.5; // Tolerance for zoom level comparison
+        const SWIPE_THRESHOLD = 50; // Minimum swipe distance to close panel
         const ERROR_TILE_URL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // 1x1 transparent GIF
         
         // Helper function to check if device is mobile
@@ -344,16 +508,29 @@
             return window.innerWidth <= MOBILE_BREAKPOINT;
         }
         
+        // Helper function to check if device is widescreen
+        function isWidescreen() {
+            return window.innerWidth >= WIDESCREEN_BREAKPOINT;
+        }
+        
+        // Helper function to get appropriate zoom level
+        function getDefaultZoom() {
+            if (isWidescreen()) return WIDESCREEN_ZOOM;
+            if (isMobile()) return MOBILE_ZOOM;
+            return DESKTOP_ZOOM;
+        }
+        
         // Helper function to check if current zoom is at default level
         function isDefaultZoomLevel(zoom) {
             return Math.abs(zoom - DESKTOP_ZOOM) < ZOOM_TOLERANCE || 
-                   Math.abs(zoom - MOBILE_ZOOM) < ZOOM_TOLERANCE;
+                   Math.abs(zoom - MOBILE_ZOOM) < ZOOM_TOLERANCE ||
+                   Math.abs(zoom - WIDESCREEN_ZOOM) < ZOOM_TOLERANCE;
         }
         
         // --- 1. SETUP MAP ---
         // Centered on Canada [Lat, Long]
         // Set initial zoom based on device type
-        var initialZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
+        var initialZoom = getDefaultZoom();
         
         var map = L.map('map', {
             zoomControl: false,
@@ -366,10 +543,10 @@
             zoomAnimation: true,
             fadeAnimation: true,
             markerZoomAnimation: true,
-            // Performance optimizations
-            preferCanvas: false,
+            // Performance optimizations for 60fps
+            preferCanvas: true, // Use canvas renderer for better performance
             updateWhenIdle: false,
-            updateWhenZooming: false,
+            updateWhenZooming: true,
             // Touch interactions
             dragging: true,
             touchZoom: true,
@@ -534,34 +711,92 @@
 
         map.on('click', function(e) {
              if (e.originalEvent.target.id === 'map') {
-                 document.getElementById('sidebar').classList.remove('active');
-                 
-                 // Responsive zoom reset
-                 var defaultZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
-                 
-                 map.flyTo([56, -106], defaultZoom);
+                 closeSidebar();
              }
         });
+        
+        // Function to close sidebar with smooth animation
+        function closeSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            sidebar.classList.remove('active');
+            sidebar.style.transform = '';
+            map.flyTo([56, -106], getDefaultZoom(), { duration: 0.8 });
+        }
 
-        // Add touch-friendly close for sidebar on mobile
+        // Close button click handler
+        document.getElementById('close-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeSidebar();
+        });
+
+        // Add touch-friendly swipe gestures for sidebar on mobile
         var sidebar = document.getElementById('sidebar');
+        var startY = 0;
         var startX = 0;
+        var currentY = 0;
         var currentX = 0;
+        var isDragging = false;
         
         sidebar.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
             startX = e.touches[0].clientX;
+            isDragging = true;
+            sidebar.style.transition = 'none'; // Disable transition during drag
         }, { passive: true });
         
         sidebar.addEventListener('touchmove', function(e) {
-            currentX = e.touches[0].clientX;
-            var diff = currentX - startX;
+            if (!isDragging) return;
             
-            // Swipe right to close on mobile
-            if (diff > 100 && isMobile()) {
-                sidebar.classList.remove('active');
-                var defaultZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
-                map.flyTo([56, -106], defaultZoom);
+            currentY = e.touches[0].clientY;
+            currentX = e.touches[0].clientX;
+            var diffY = currentY - startY;
+            var diffX = currentX - startX;
+            
+            if (isMobile()) {
+                // Swipe down to close on mobile (bottom sheet)
+                if (diffY > 0) {
+                    // Apply drag transform for visual feedback
+                    sidebar.style.transform = 'translateY(' + Math.min(diffY, 200) + 'px)';
+                }
+            } else {
+                // Swipe right to close on desktop/tablet (side panel)
+                if (diffX > 0) {
+                    sidebar.style.transform = 'translateX(' + Math.min(diffX, 200) + 'px)';
+                }
             }
+        }, { passive: true });
+        
+        sidebar.addEventListener('touchend', function(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            var diffY = currentY - startY;
+            var diffX = currentX - startX;
+            
+            // Restore transition
+            sidebar.style.transition = '';
+            
+            if (isMobile()) {
+                // Close if swiped down past threshold
+                if (diffY > SWIPE_THRESHOLD) {
+                    closeSidebar();
+                } else {
+                    sidebar.style.transform = '';
+                }
+            } else {
+                // Close if swiped right past threshold
+                if (diffX > SWIPE_THRESHOLD) {
+                    closeSidebar();
+                } else {
+                    sidebar.style.transform = '';
+                }
+            }
+            
+            // Reset values
+            startY = 0;
+            startX = 0;
+            currentY = 0;
+            currentX = 0;
         }, { passive: true });
 
         // Handle orientation changes and responsive resizing
@@ -573,7 +808,7 @@
                 
                 // Adjust zoom level based on new screen size
                 var currentZoom = map.getZoom();
-                var expectedZoom = isMobile() ? MOBILE_ZOOM : DESKTOP_ZOOM;
+                var expectedZoom = getDefaultZoom();
                 
                 // Only adjust if zoom hasn't been manually changed
                 if (isDefaultZoomLevel(currentZoom)) {
